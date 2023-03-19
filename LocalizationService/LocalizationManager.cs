@@ -10,11 +10,12 @@ namespace LocalizationService
 {
     public class LocalizationManager
     {
-        private readonly List<IResourceReader> _resourceReaders;
+        private readonly CombinedResourceReader _combinedeReader;
 
         public LocalizationManager()
         {
-            _resourceReaders = new List<IResourceReader>();
+            _combinedeReader = new CombinedResourceReader();
+
         }
 
         public void RegisterSource(IResourceReader resourceReader)
@@ -24,12 +25,19 @@ namespace LocalizationService
 
         public string GetString(string key, CultureInfo cultureInfo = null)
         {
-            if (cultureInfo == null)
+            if(string.IsNullOrEmpty(key))
             {
-                cultureInfo = CultureInfo.CurrentCulture;
+                throw new ArgumentNullException(nameof(key), "Код не должен быть пустым или равным null");
             }
 
-            //ResourceSet resourceSet = new ResourceSet(new ResourceReader(_resourceReaders));
+            if (cultureInfo == null)
+            {
+                cultureInfo = Thread.CurrentThread.CurrentCulture;
+            }
+
+            ResourceSet resourceSet = new ResourceSet(new CombinedResourceReader(_resourceReaders));
+
+            string localizedString = resourceSet.GetString(key, cultureInfo);
         }
     }
 }
