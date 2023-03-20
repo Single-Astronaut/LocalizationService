@@ -107,7 +107,7 @@ namespace LocalizationService
             }
         }
 
-        public virtual IDictionaryEnumerator GetEnumerator()
+        public IDictionaryEnumerator GetEnumerator()
         {
             var combinedDictionary = new Dictionary<object, object>();
 

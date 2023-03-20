@@ -18,9 +18,9 @@ namespace LocalizationService
 
         }
 
-        public void RegisterSource(IResourceReader resourceReader)
+        public void RegisterSource(CombinedResourceReader resourceReader)
         {
-            _resourceReaders.Add(resourceReader);
+            _combinedeReader.AddReader(resourceReader);
         }
 
         public string GetString(string key, CultureInfo cultureInfo = null)
@@ -35,7 +35,7 @@ namespace LocalizationService
                 cultureInfo = Thread.CurrentThread.CurrentCulture;
             }
 
-            ResourceSet resourceSet = new ResourceSet(new CombinedResourceReader(_resourceReaders));
+            ResourceSet resourceSet = new ResourceSet(new CombinedResourceReader(_combinedeReader));
 
             string localizedString = resourceSet.GetString(key, cultureInfo);
         }
