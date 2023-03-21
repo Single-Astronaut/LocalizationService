@@ -10,20 +10,22 @@ namespace LocalizationService
 {
     public class LocalizationManager
     {
-        private readonly CombinedResourceReader _combinedeReader;
+        private readonly CombinedResourceReader _combinedReader;
+        private readonly ResourceSet _resourceSet;
 
         public LocalizationManager()
         {
-            _combinedeReader = new CombinedResourceReader();
+            _combinedReader = new CombinedResourceReader();
+            _resourceSet = new ResourceSet(_combinedReader);
 
         }
 
         public void RegisterSource(CombinedResourceReader resourceReader)
         {
-            _combinedeReader.AddReader(resourceReader);
+            _combinedReader.AddReader(resourceReader);
         }
 
-        public string GetString(string key, CultureInfo cultureInfo = null)
+        public string GetString(string key, CultureInfo? cultureInfo = null)
         {
             if(string.IsNullOrEmpty(key))
             {
@@ -35,9 +37,10 @@ namespace LocalizationService
                 cultureInfo = Thread.CurrentThread.CurrentCulture;
             }
 
-            ResourceSet resourceSet = new ResourceSet(new CombinedResourceReader(_combinedeReader));
+            ResourceSet resourceSet = new ResourceSet(_combinedReader.GetResourceStream(cultureInfo));
 
-            string localizedString = resourceSet.GetString(key, cultureInfo);
+            string localizedString = resourceSet.GetString(key);
+            return localizedString;
         }
     }
 }

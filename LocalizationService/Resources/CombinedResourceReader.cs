@@ -1,82 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace LocalizationService
 {
-    //public class CombinedResourceReader : IResourceReader
-    //{
-    //    private List<IResourceReader> _readers = new List<IResourceReader>();
-
-    //    public CombinedResourceReader(params IResourceReader[] readers)
-    //    {
-    //        _readers.AddRange(readers);
-    //    }
-
-    //    public void AddReader(IResourceReader reader)
-    //    {
-    //        _readers.Add(reader);
-    //    }
-
-    //    public void Close()
-    //    {
-    //        foreach (var reader in _readers)
-    //        {
-    //            reader.Close();
-    //        }
-    //    }
-
-    //    public void Dispose()
-    //    {
-    //        Close();
-    //    }
-
-    //    //public IDictionaryEnumerator GetEnumerator()
-    //    //{
-    //    //    Dictionary<object, object> combinedDictionary = new Dictionary<object, object>();
-
-    //    //    foreach (IResourceReader reader in _readers)
-    //    //    {
-    //    //        IDictionaryEnumerator enumerator = reader.GetEnumerator();
-
-    //    //        while (enumerator.MoveNext())
-    //    //        {
-    //    //            if (!combinedDictionary.Contains(enumerator.Key))
-    //    //            {
-    //    //                combinedDictionary.Add(enumerator.Key, enumerator.Value);
-    //    //            }
-    //    //        }
-
-    //    //        enumerator.Reset();
-    //    //    }
-
-    //    //    return combinedDictionary.GetEnumerator();
-    //    //}
-
-    //    public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-    //    {
-    //        var combinedDictionary = new Dictionary<string, object>();
-    //        foreach (var reader in _readers)
-    //        {
-    //            var enumerator = reader.GetEnumerator();
-    //            while (enumerator.MoveNext())
-    //            {
-    //                combinedDictionary[(string)enumerator.Key] = enumerator.Value;
-    //            }
-    //        }
-    //        return combinedDictionary.GetEnumerator();
-    //    }
-
-    //    IEnumerator IEnumerable.GetEnumerator()
-    //    {
-    //        return GetEnumerator();
-    //    }
-    //}
-
     public class CombinedResourceReader : IResourceReader
     {
         private readonly List<IResourceReader> _readers;
@@ -129,6 +62,30 @@ namespace LocalizationService
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public Stream GetResourceStream(CultureInfo cultureInfo)
+        {
+            foreach (var reader in _readers)
+            {
+                if (reader is IResourceReader resourceReader)
+                {
+                    var resourceSet = new ResourceSet(resourceReader);
+
+                    var resourceKey = resourceSet.GetEnumerator().Entry.Key.ToString();
+
+                    var assembly = Assembly.GetExecutingAssembly();
+
+                    var resourceStream = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{resourceKey}");
+
+                    if (resourceStream != null)
+                    {
+                        return resourceStream;
+                    }
+                }
+            }
+
+            return null;
         }
     }
 
