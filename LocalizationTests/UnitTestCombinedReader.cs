@@ -19,11 +19,9 @@ namespace LocalizationService
             var mockReader2 = new Mock<IResourceReader>();
             var combinedResourceReader = new CombinedResourceReader((LocalizationService.IAssemblyWrapper)assemblyWrapper);
 
-            // Act
             combinedResourceReader.AddReader(mockReader1.Object);
             combinedResourceReader.AddReader(mockReader2.Object);
 
-            // Assert
             Assert.AreEqual(2, combinedResourceReader.GetReaders().Count);
         }
 
@@ -124,7 +122,6 @@ namespace LocalizationService
         [TestMethod]
         public void TestGetResourceStream()
         {
-            // Arrange
             var mockResourceReader = new Mock<IResourceReader>();
             var mockAssemblyWrapper = new Mock<IAssemblyWrapper>();
             var combinedResourceReader = new CombinedResourceReader((LocalizationService.IAssemblyWrapper)mockAssemblyWrapper.Object);
@@ -132,12 +129,10 @@ namespace LocalizationService
             mockResourceReader.Setup(x => x.GetEnumerator())
                               .Returns(new Dictionary<object, object> { { "TestResource", new object() } }.GetEnumerator());
             mockAssemblyWrapper.Setup(x => x.GetExecutingAssembly())
-                               .Returns(typeof(CombinedResourceReader).Assembly); // изменение здесь
+                               .Returns(typeof(CombinedResourceReader).Assembly);
 
-            // Act
             var result = combinedResourceReader.GetResourceStream(CultureInfo.InvariantCulture);
 
-            // Assert
             Assert.IsNotNull(result);
         }
     }
