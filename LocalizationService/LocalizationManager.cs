@@ -13,11 +13,15 @@ namespace LocalizationService
         private readonly CombinedResourceReader _combinedReader;
         private readonly ResourceSet _resourceSet;
 
-        public LocalizationManager()
+        public LocalizationManager(IAssemblyWrapper assemblyWrapper)
         {
-            _combinedReader = new CombinedResourceReader();
+            _combinedReader = new CombinedResourceReader(assemblyWrapper);
             _resourceSet = new ResourceSet(_combinedReader);
+        }
 
+        public CombinedResourceReader GetCombinedReader()
+        {
+            return _combinedReader;
         }
 
         public void RegisterSource(CombinedResourceReader resourceReader)

@@ -10,13 +10,30 @@ using System.Threading.Tasks;
 
 namespace LocalizationService
 {
+    public interface IAssemblyWrapper
+    {
+        Assembly GetExecutingAssembly();
+    }
+
+    public class AssemblyWrapper : IAssemblyWrapper
+    {
+        public Assembly GetExecutingAssembly() => Assembly.GetExecutingAssembly();
+    }
+
     public class CombinedResourceReader : IResourceReader
     {
         private readonly List<IResourceReader> _readers;
+        private readonly IAssemblyWrapper _assemblyWrapper;
 
-        public CombinedResourceReader() 
+        public CombinedResourceReader(IAssemblyWrapper assemblyWrapper)
         {
             _readers = new List<IResourceReader>();
+            _assemblyWrapper = assemblyWrapper;
+        }
+
+        public List<IResourceReader> GetReaders()
+        {
+            return _readers;
         }
 
         public void AddReader(IResourceReader reader)
@@ -72,15 +89,19 @@ namespace LocalizationService
                 {
                     var resourceSet = new ResourceSet(resourceReader);
 
-                    var resourceKey = resourceSet.GetEnumerator().Entry.Key.ToString();
-
-                    var assembly = Assembly.GetExecutingAssembly();
-
-                    var resourceStream = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{resourceKey}");
-
-                    if (resourceStream != null)
+                    var enumerator = resourceSet.GetEnumerator();
+                    if (enumerator.MoveNext())
                     {
-                        return resourceStream;
+                        var resourceKey = enumerator.Key.ToString();
+
+                        var assembly = _assemblyWrapper.GetExecutingAssembly(); 
+
+                        var resourceStream = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{resourceKey}");
+
+                        if (resourceStream != null)
+                        {
+                            return resourceStream;
+                        }
                     }
                 }
             }
