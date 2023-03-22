@@ -46,5 +46,22 @@ namespace LocalizationService
             string localizedString = resourceSet.GetString(key);
             return localizedString;
         }
+
+        public bool Contains(string key, CultureInfo? cultureInfo = null)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentNullException(nameof(key), "Код не должен быть пустым или равным null");
+            }
+
+            if (cultureInfo == null)
+            {
+                cultureInfo = Thread.CurrentThread.CurrentCulture;
+            }
+
+            ResourceSet resourceSet = new ResourceSet(_combinedReader.GetResourceStream(cultureInfo));
+
+            return resourceSet.GetObject(key) != null;
+        }
     }
 }

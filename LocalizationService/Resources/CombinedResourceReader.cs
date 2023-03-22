@@ -19,7 +19,9 @@ namespace LocalizationService
     {
         public Assembly GetExecutingAssembly() => Assembly.GetExecutingAssembly();
     }
-
+    /// <summary>
+    /// Класс считывания ресурсов
+    /// </summary>
     public class CombinedResourceReader : IResourceReader
     {
         private readonly List<IResourceReader> _readers;

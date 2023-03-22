@@ -55,7 +55,7 @@ namespace LocalizationTests
         [TestMethod]
         public void RegisterSource_AddsResourceReader()
         {
-            var resxReader = new ResXResourceReader("W:\\Projects\\TestToDirectum2\\LocalizationService\\LocalizationService\\Resource1.resx");
+            var resxReader = new ResXResourceReader("..\LocalizationService\Resource1.resx");
             var assemblyWrapper = new ResXResourceSet(resxReader.ToString());
             var combinedReader = new CombinedResourceReader((IAssemblyWrapper)assemblyWrapper);
             var manager = new LocalizationManager((IAssemblyWrapper)combinedReader);
